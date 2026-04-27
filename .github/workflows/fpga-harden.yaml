@@ -1,0 +1,37 @@
+name: FPGA Harden
+# use
+# on: [push, workflow_dispatch]
+# to enable automatic trigger on push
+on: [workflow_dispatch]
+jobs:
+  fpga-harden:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup latest OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          # Use the bundled Python 3 from OSS CAD Suite (matches the "activate environment" intent)
+          python-override: true
+
+      - name: Clone tt-support-tools into ./tt
+        run: |
+          rm -rf tt
+          git clone https://github.com/TinyTapeout/tt-support-tools.git tt
+
+      - name: Install Python requirements and Harden
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install -r tt/requirements.txt
+          python ./tt/tt_fpga.py harden
+
+      - name: Upload build artifacts (bitstream + logs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpga-build
+          path: build/
+          if-no-files-found: warn

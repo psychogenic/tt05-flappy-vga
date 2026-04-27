@@ -1,6 +1,6 @@
 name: wokwi_test
 # either manually started, or on a schedule
-on: [ push, workflow_dispatch ]
+on: [ workflow_dispatch ]
 jobs:
   wokwi_test:
     # ubuntu
