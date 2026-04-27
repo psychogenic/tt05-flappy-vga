@@ -21,12 +21,45 @@ module tt_um_flappy_vga_cutout1 (
 	wire h_sync, v_sync;
 	wire game_button;
 	wire bright;
+
+	// Gamepad Pmod support
+	wire gamepad_pmod_latch = ui_in[4];
+	wire gamepad_pmod_clk = ui_in[5];
+	wire gamepad_pmod_data = ui_in[6];
+	wire gamepad_is_present;
+	wire gamepad_left;
+	wire gamepad_right;
+	wire gamepad_up;
+	wire gamepad_down;
+	wire gamepad_start;
+	wire gamepad_select;
+	wire gamepad_a;
+	wire gamepad_x;
+	
 	
 	assign uio_oe = 8'b11111111;
 	assign uio_out = score;
 	
-	assign game_button = ui_in[0];
-	
+
+      gamepad_pmod_single gamepad_pmod (
+	// Inputs:
+	.clk(clk),
+	.rst_n(rst_n),
+	.pmod_latch(gamepad_pmod_latch),
+	.pmod_clk(gamepad_pmod_clk),
+	.pmod_data(gamepad_pmod_data),
+
+	// Outputs:
+	.is_present(gamepad_is_present),
+	.left(gamepad_left),
+	.right(gamepad_right),
+	.up(gamepad_up),
+	.down(gamepad_down),
+	.start(gamepad_start),
+	.select(gamepad_select),
+	.a(gamepad_a),
+	.x(gamepad_x)
+      );
 	// Tiny VGA PMOD compatible outputs
 	assign uo_out[0] = red;    // R1
 	assign uo_out[1] = green;  // G1
@@ -37,10 +70,22 @@ module tt_um_flappy_vga_cutout1 (
 	assign uo_out[6] = blue;   // B0
 	assign uo_out[7] = h_sync; // hsync
 	
-	gameControl game (clk, rst_n, v_sync, game_button, bird_pos, hole_pos, pipe_pos, score);
+	gameControl game (clk, rst_n, v_sync, game_button, gamepad_start, bird_pos, hole_pos, pipe_pos, score);
 	
 	vgaControl controller (clk, rst_n, h_sync, v_sync, bright, h_count, v_count);
 	
 	bitGen bitGenerator (clk, rst_n, bright, h_count, v_count, bird_pos, hole_pos, pipe_pos, red, green, blue);
+	
+	always @(posedge clk)
+	begin
+	  if (gamepad_is_present)
+	   begin
+	    game_button <= ~(gamepad_up || gamepad_a || gamepad_x);
+	   end
+	  else
+	   begin
+	    game_button <= ui_in[0];
+	   end
+	end
 	
 endmodule

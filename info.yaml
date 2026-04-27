@@ -15,6 +15,7 @@ project:
     - vgaControl.v
     - bitGen.v
     - gameControl.v
+    - gamepad_pmod.v
   top_module:  "tt_um_flappy_vga_cutout1"  
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.

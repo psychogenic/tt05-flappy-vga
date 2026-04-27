@@ -1,5 +1,5 @@
 module gameControl (
-	input wire clock, reset, v_sync, button,
+	input wire clock, reset, v_sync, button, force_restart,
 	output reg [8:0] bird_pos, hole_pos,
 	output reg [9:0] pipe_pos,
 	output reg [7:0] score
@@ -34,7 +34,7 @@ module gameControl (
 	
 	always @(posedge clock)
 	begin
-		if(!reset || restart_game)
+		if(!reset || restart_game || force_restart)
 		begin
 			bird_pos <= 9'd265;
 			hole_pos <= 9'd165;
