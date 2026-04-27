@@ -77,7 +77,7 @@ module gameControl (
 					pipe_pos <= pipe_pos - 10'd4;
 				end
 				
-				if(bird_pos > 9'd480 || (pipe_pos < 10'd200 && pipe_pos > 10'd50 && !(bird_pos > hole_pos + 9'd50 && bird_pos < hole_pos + 9'd150)))
+				if(bird_pos > 9'd480 || (pipe_pos < 10'd200 && pipe_pos > 10'd50 && !(bird_pos > hole_pos + 9'd10 && bird_pos < hole_pos + 9'd225)))
 					game_over <= 1'b1;
 			end
 			else if(!button && !has_flapped)
